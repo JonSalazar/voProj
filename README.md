@@ -8,3 +8,8 @@ build docker image
 run docker container
 `docker run -p 5000:5000 --rm -it vivaorganica_1 /bin/bash`
 
+
+## connect to aws
+
+`http://ec2-18-188-29-88.us-east-2.compute.amazonaws.com:5000/`
+

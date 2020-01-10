@@ -9,25 +9,33 @@ RUN useradd -ms /bin/bash postgres && \
     echo "postgres        ALL=(ALL)       NOPASSWD:ALL" >> /etc/sudoers
 
 # install postgres
-RUN su postgres && \
-    sudo apt-get update -y && \
-    sudo apt-get install postgresql postgresql-contrib -y && \
-    sudo service postgresql start
+USER postgres
+
+RUN sudo apt-get update -y && \
+    sudo apt-get install postgresql postgresql-contrib -y
+
+USER root
 
 #install pip3
-RUN sudo apt-get update && \
-    sudo apt install python3-pip -y && \
+RUN apt-get update && \
+    apt install python3-pip -y && \
     pip3 install -U Flask
 
-#for developing
-RUN sudo apt-get install vim -y
+RUN pip3 install requests
 
-WORKDIR /home/postgres
+#for developing
+RUN apt-get install vim -y
+
+WORKDIR /home/admin
 
 COPY . .
 
-ENTRYPOINT export LC_ALL=C.UTF-8 && export LANG=C.UTF-8 && \
-    flask run -h 0.0.0.0 && \
-    su admin && \
-    service postgresql start && \
-    python3 app.py
+# add user admin
+RUN useradd -ms /bin/bash admin && \
+    echo "admin        ALL=(ALL)       NOPASSWD:ALL" >> /etc/sudoers
+
+USER admin
+
+CMD export LC_ALL=C.UTF-8 && export LANG=C.UTF-8 && \
+    sudo service postgresql start && \
+    flask run -h 0.0.0.0
