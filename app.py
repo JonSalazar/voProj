@@ -1,43 +1,45 @@
-from flask import Flask, jsonify, make_response, abort
+from flask import Flask, jsonify, make_response, abort, request
+from personController import PersonController
 import requests
 
 app = Flask(__name__)
-
-tasks = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol', 
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web', 
-        'done': False
-    }
-]
 
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-@app.route('/todo/api/v1.0/tasks', methods=['GET'])
-def get_tasks():
-    return jsonify({'tasks': tasks})
+person = PersonController()
 
+@app.route('/person', methods=['POST'])
+def add_person():
+    person.add_person(
+        request.form.get('name'),
+        request.form.get('date_of_birth'),
+        request.form.get('job')
+        )
+    return jsonify({'status': 'success'})
 
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
-def get_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
-        abort(404)
-    return jsonify({'task': task[0]})
+@app.route('/person/<person_name>', methods=['DELETE'])
+def delete_person(person_name):
+    person.delete_person(person_name)
+    return jsonify({'status': 'success'})
 
+@app.route('/person/<person_name>', methods=['GET'])
+def get_person(person_name):
+    p = person.get_person(person_name)
+    return jsonify({'status': 'success', 'value': p})
 
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
+@app.route('/person/<person_name>', methods=['PUT'])
+def put_person(person_name):
+    person.put_person(
+        person_name,
+        request.form.get('name'),
+        request.form.get('date_of_birth'),
+        request.form.get('job')
+        )
+    return jsonify({'status': 'success'})
 
 if __name__ == '__main__':
     app.run()
+
+# curl -d "name=jon&date_of_birth=1989-08-02&job=developer" -X POST http://localhost:5000/person

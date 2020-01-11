@@ -12,4 +12,3 @@ run docker container
 ## connect to aws
 
 `http://ec2-18-188-29-88.us-east-2.compute.amazonaws.com:5000/`
-
