@@ -40,7 +40,8 @@ RUN apt-get update && \
     /home/admin/venvs/postgres/bin/pip install psycopg2 && \
     pip3 install psycopg2 && \
     pip3 install flask-jwt-extended && \
-    pip3 install flask-hashing
+    pip3 install flask-hashing && \
+    pip3 install flask-sqlalchemy
 
 COPY . .
 
@@ -54,4 +55,6 @@ CMD export LC_ALL=C.UTF-8 && export LANG=C.UTF-8 && \
 
 
 
+# pip3 install Flask-SQLAlchemy===2.1 Flask-Migrate==1.8.0
 
+## 

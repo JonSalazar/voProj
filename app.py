@@ -1,17 +1,17 @@
 from flask import Flask, jsonify, make_response, abort, request
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token
-)
-import loginController
-from personController import PersonController
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from flask_sqlalchemy import SQLAlchemy
+
 import requests
 
 app = Flask(__name__)
 app.config.from_object('config')
 
 jwt = JWTManager(app)
+db = SQLAlchemy(app)
 
-person = PersonController()
+import loginController
+import personController
 
 @app.route('/sign_up', methods=['POST'])
 def signUp():
@@ -49,7 +49,6 @@ def login():
 
     return (jsonify({'access_token': access_token}), 200)
 
-
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
@@ -57,34 +56,65 @@ def not_found(error):
 @app.route('/person', methods=['POST'])
 @jwt_required
 def add_person():
-    person.add_person(
-        request.form.get('name'),
-        request.form.get('date_of_birth'),
-        request.form.get('job')
-        )
+    if not request.is_json:
+        return (jsonify({'msg': 'Missing JSON in request'}), 400)
+
+    name = request.json.get('name')
+    date_of_birth = request.json.get('date_of_birth')
+    job = request.json.get('job')
+
+    if (not name):
+        return (jsonify({'msg': 'Missing name'}), 400)
+    if (not date_of_birth):
+        return (jsonify({'msg': 'Missing date_of_birth'}), 400)
+    if (not job):
+        return (jsonify({'msg': 'Missing job'}), 400)
+
+    id = personController.addPerson(name, date_of_birth, job)
+
+    if (not id):
+        return (jsonify({'msg': 'Bad format arguments'}), 422)
+
+    return jsonify({'status': 'success', 'id': id})
+
+@app.route('/person/<int:id>', methods=['DELETE'])
+@jwt_required
+def delete_person(id):
+    result = personController.deletePerson(id)
+    if (not result):
+        abort(404)
+
     return jsonify({'status': 'success'})
 
-@app.route('/person/<person_name>', methods=['DELETE'])
+@app.route('/person/<int:id>', methods=['GET'])
 @jwt_required
-def delete_person(person_name):
-    person.delete_person(person_name)
-    return jsonify({'status': 'success'})
+def get_person(id):
+    persona = personController.getPerson(id)
+    if (not persona):
+        abort(404)
 
-@app.route('/person/<person_name>', methods=['GET'])
-@jwt_required
-def get_person(person_name):
-    p = person.get_person(person_name)
-    return jsonify({'status': 'success', 'value': p})
+    return jsonify({'status': 'success', 'person': {
+        'name': persona.nombre,
+        'date_of_birth': persona.fecha_nacimiento,
+        'job': persona.puesto
+    }})
 
-@app.route('/person/<person_name>', methods=['PUT'])
+@app.route('/person/<int:id>', methods=['PUT'])
 @jwt_required
-def put_person(person_name):
-    person.put_person(
-        person_name,
-        request.form.get('name'),
-        request.form.get('date_of_birth'),
-        request.form.get('job')
-        )
+def put_person(id):
+    if not request.is_json:
+        return (jsonify({'msg': 'Missing JSON in request'}), 400)
+
+    result = personController.putPerson(
+        id,
+        request.json.get('name'),
+        request.json.get('date_of_birth'),
+        request.json.get('job')
+    )
+
+    if (not result):
+        abort(404)
+
     return jsonify({'status': 'success'})
 
 if __name__ == '__main__':

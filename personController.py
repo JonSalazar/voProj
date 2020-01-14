@@ -1,21 +1,49 @@
-from owndb import GenericDb
+from app import db
+from models import Personas
 
-class PersonController:
+def addPerson(name, date, job):
+    persona = Personas(nombre=name, fecha_nacimiento=date, puesto=job)
+    db.session.add(persona)
 
-    def __init__(self):
-        self.db = GenericDb()
+    try:
+        db.session.commit()
+    except exc.SQLAlchemyError:
+        return False
 
-    def add_person(self, name, date, job):
-        self.db.sentenceWrite("INSERT INTO Personas (nombre, fecha_nacimiento, puesto) VALUES ('%s', '%s', '%s')" % (name, date, job))
+    return persona.id
 
-    def delete_person(self, name):
-        self.db.sentenceWrite("DELETE FROM Personas WHERE nombre='%s'" % name)
+def deletePerson(id):
+    persona = Personas.query.filter_by(id=id).first()
     
-    def get_person(self, name):
-        rows = self.db.sentenceRead("SELECT nombre, fecha_nacimiento, puesto FROM Personas WHERE nombre='%s'" % name)
-        return rows
+    if (not persona):
+        return False
 
-    def put_person(self, current_name, name, date, job):
-        self.db.sentenceWrite("""
-            UPDATE Personas SET nombre='%s', fecha_nacimiento='%s', puesto='%s' WHERE nombre='%s'
-        """ % (name, date, job, current_name))
+    db.session.delete(persona)
+    db.session.commit()
+
+    return True
+
+def getPerson(id):
+    persona = Personas.query.filter_by(id=id).first()
+    
+    if (not persona):
+        return False
+
+    return persona
+
+def putPerson(id, name, date, job):
+    persona = Personas.query.filter_by(id=id).first()
+    
+    if (not pesrona):
+        return False
+
+    if (name):
+        persona.nombre = name
+    if (date):
+        persona.fecha_nacimiento = date
+    if (job):
+        persona.puest = job
+    
+    db.session.commit()
+
+    return True
