@@ -8,7 +8,7 @@ It uses a DockerFile to create an environment with required dependencies.
 
 ## How to run
 
-I need to change the postgres database manually as follow (inside of the container)
+I need to change the postgres database manually as follow (inside of the container).
 
 ```sh
 docker build -t vivaorganica_1 -f Dockerfile .
@@ -38,7 +38,7 @@ flask run -h 0.0.0.0
 
 ## Use the API
 
-It needed a JWT get it from signing up by `sign_up` and `login` endpoints
+You need a JWT to be authorized, get it from signing up by `sign_up` and `login` endpoints.
 
 Example
 ```sh
@@ -46,7 +46,7 @@ curl -H "Content-type: application/json" -d '{"username":"name", "password":"pas
 curl -H "Content-type: application/json" -d '{"username":"name", "password":"pass"}' -X POST http://localhost:5000/login
 ```
 
-you will get something like this
+you will get something like this.
 
 ```
 {"access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Nzg5Nzc5ETIsIm5iZiI6MTU3ODk3Nzk1MiwianRpIjoiOGY2OTY3MDUtZDZmMS00ODBjLThlMWYtOTMzNmY4OWEzN2I4IiwiZXhwIjoxNLc1OTc5ODUyLCJpZGVudGl0eSI6ImpvbiIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.nYUU83KgWiaAUqdy2KW7lm9ai-RN0oLc5OEDnnb5Quo"}
@@ -54,7 +54,7 @@ you will get something like this
 ```
 
 
-Then you can use the following REST endpoints
+Then you can use the following REST endpoints.
 ```
 POST person
 GET person
@@ -83,7 +83,7 @@ PUT person
 
 ### run in AWS ec2
 
-This service was deployed in an AWS cloud, be free of test it in
+This service was deployed in an AWS cloud, be free to test it.
 
 `http://ec2-18-188-29-88.us-east-2.compute.amazonaws.com:5000`
 
