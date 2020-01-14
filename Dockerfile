@@ -33,12 +33,14 @@ RUN useradd -ms /bin/bash admin && \
 WORKDIR /home/admin
 
 # install postgres driver to use it in flask
-RUN sudo apt-get update && \
-    sudo pip3 install virtualenv && \
+RUN apt-get update && \
+    pip3 install virtualenv && \
     virtualenv --python=/usr/bin/python3 venvs/postgres && \
-    sudo apt-get install libpq-dev python-dev -y && \
+    apt-get install libpq-dev python-dev -y && \
     /home/admin/venvs/postgres/bin/pip install psycopg2 && \
-    sudo pip3 install psycopg2
+    pip3 install psycopg2 && \
+    pip3 install flask-jwt-extended && \
+    pip3 install flask-hashing
 
 COPY . .
 
