@@ -104,7 +104,7 @@ def get_person(id):
 def put_person(id):
     if not request.is_json:
         return (jsonify({'msg': 'Missing JSON in request'}), 400)
-
+    
     result = personController.putPerson(
         id,
         request.json.get('name'),

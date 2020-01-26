@@ -1,3 +1,3 @@
 JWT_SECRET_KEY = "dd8a35cec56e09a6c13dcced5f6844379e40cbc33993628798bb62f440ee90c5a23e46f6e25ad1e9"
-SQLALCHEMY_DATABASE_URI = "postgresql://postgres:pass123@localhost:5432/postgres"
+SQLALCHEMY_DATABASE_URI = "postgresql://postgres:pass123@psql-container:5432/postgres"
 SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -8,23 +8,15 @@ It uses a DockerFile to create an environment with required dependencies.
 
 ## How to run
 
-I need to change the postgres database manually as follow (inside of the container).
-
 ```sh
+cd vivaorganica
+mkdir -p $HOME/docker/volumes/postgres
 docker build -t vivaorganica_1 -f Dockerfile .
-docker run -p 5000:5000 --rm -it vivaorganica_1 /bin/bash
+docker pull postgres:12.1
+docker run --rm --name psql-container -e POSTGRES_PASSWORD=pass123 -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data -d postgres:12.1
+docker run --rm --name app-container -p 5000:5000 --link psql-container -it vivaorganica_1
 # once you are in the container...
 export LC_ALL=C.UTF-8 && export LANG=C.UTF-8
-sudo service postgresql start
-sudo su postgres
-psql -U postgres
-# once you are in postgres terminal
-\password
-# here we use pass123 BUT THIS IS JUST FOR LEARNING, NEVER USE THIS IN A REAL PROJECT
-
-# return to admin user
-\q
-exit
 
 # migrate database into python terminal
 python3
